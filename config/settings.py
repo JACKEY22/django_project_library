@@ -27,7 +27,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','vpbm*$s*wfi=26&^*n!dmyi=v1j-q58
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 DEBUG = bool(os.environ.get('DJANGO_DEBUG',True))
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['still-dawn-75307.herokuapp.com','127.0.0.0']
+
 
 
 # Application definition
