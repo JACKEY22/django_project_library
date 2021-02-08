@@ -7,11 +7,14 @@ from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 
 from catalog.forms import RenewBookForm
 from catalog.models import Book, BookInstance, Author
 
+
+permission = [login_required, permission_required('catalog.can_mark_returned', raise_exception=True)]
 
 def index(request):
    num_books = Book.objects.all().count()
@@ -56,24 +59,25 @@ class BookDetailView(DetailView):
     model = Book
     template_name = 'catalog/book_detail.html'
 
-@login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@method_decorator(permission,'get')
+@method_decorator(permission,'post')
 class BookCreateView(CreateView):
     model = Book
     fields = '__all__'
 
-@login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@method_decorator(permission,'get')
+@method_decorator(permission,'post')
 class BookUpdateView(UpdateView):
     model = Book
     fields = '__all__'
 
-@login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@method_decorator(permission,'get')
+@method_decorator(permission,'post')
 class BookDeleteView(DeleteView):
     model = Book
     success_url = reverse_lazy('book_list')
     template_name = 'catalog/book_delete.html'
+
 
 
 class MybookListView(LoginRequiredMixin,ListView):
@@ -83,8 +87,7 @@ class MybookListView(LoginRequiredMixin,ListView):
     def get_queryset(self):
         return BookInstance.objects.filter(borrower=self.request.user).filter(status__iexact='o').order_by('due_back')
 
-@login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@method_decorator(permission,'get')
 class BorrowedBookListView(ListView):
     model = BookInstance
     template_name = 'catalog/borrowed_book_list.html'
@@ -139,8 +142,8 @@ class AuthorDetailView(DetailView):
 
 
 # need form - specify fields
-@login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@method_decorator(permission,'get')
+@method_decorator(permission,'post')
 class AuthorCreateView(CreateView):
     model = Author
     fields = ['first_name','last_name','date_of_birth','date_of_death']
@@ -149,16 +152,16 @@ class AuthorCreateView(CreateView):
     # success_url = detail
 
 # need form
-@login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@method_decorator(permission,'get')
+@method_decorator(permission,'post')
 class  AuthorUpdateView(UpdateView):
     model = Author
     fields = '__all__'
     # template_name = author_form (default)
     # success_url = detail
 
-@login_required
-@permission_required('catalog.can_mark_returned', raise_exception=True)
+@method_decorator(permission,'get')
+@method_decorator(permission,'post')
 class AuthorDeleteView(DeleteView):
     model = Author
     success_url = reverse_lazy('authors')
